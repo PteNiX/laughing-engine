@@ -95,6 +95,7 @@ def parse_hero_code(HeroCodeFields):
     input_prof_lvl.value = HeroCodeFields.professionLvl
     input_hero.value = HeroCodeFields.heroID
     input_xp.value = HeroCodeFields.heroXP
+    print(f'x = {HeroCodeFields.locationX} y = {HeroCodeFields.locationY}')
     update_location(HeroCodeFields.locationX, HeroCodeFields.locationY)
 
     hero_code_field.focus()
@@ -108,13 +109,14 @@ def parse_item_code(ItemCodeFields):
     input_shards.value = ItemCodeFields.shards
     input_pvp_points.value = ItemCodeFields.pvpPoints
 
+    print(f'numberOfItems = {ItemCodeFields.numberOfItems}')
     for i in range(6):
         if i < len(ItemCodeFields.items):
             item, amount = ItemName[ItemCodeFields.items[i].id], ItemCodeFields.items[i].amount
         else:
             item, amount = '', ''
         document[f'item-{i + 1}'].value = item
-        document[f'item-{i + 1}-count'].value = amount
+        document[f'item-{i + 1}-count'].value = (1 if amount == 0 else amount)
 
     for i in range(6):
         if i < len(ItemCodeFields.stashItems):
@@ -122,7 +124,7 @@ def parse_item_code(ItemCodeFields):
         else:
             item, amount = '', ''
         document[f'stash-item-{i + 1}'].value = item
-        document[f'stash-item-{i + 1}-count'].value = amount
+        document[f'stash-item-{i + 1}-count'].value = (1 if amount == 0 else amount)
 
     items_code_field.focus()
 
@@ -209,6 +211,7 @@ def update_location(x, y):
     y = int(-side if y < -side else side if y > side else y)
 
     draw_location(*convert_coordinates(x, y, rec_x, rec_y, 'game_to_webgui'))
+    print(f'coordinates : {x}, {y}')
     coordinate_x.value = HeroCode.locationX = x
     coordinate_y.value = HeroCode.locationY = y
 
@@ -424,7 +427,7 @@ def refresh_item(ev):
     if pop:
         (ItemCode.items if ev.id[0] == 'i' else ItemCode.stashItems).pop(int(ev.id[-1]) - 1, None)
     else:
-        item = Item(ItemName[ev.value], count.value)
+        item = Item(ev.value, count.value)
         (ItemCode.items if ev.id[0] == 'i' else ItemCode.stashItems)[int(ev.id[-1]) - 1] = item
 
     ev.setCustomValidity("")
